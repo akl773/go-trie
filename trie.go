@@ -60,19 +60,20 @@ func (t *Trie) delete(node *Node, word string, index int) *Node {
 		if node.count != 0 {
 			node.count--
 		}
-		if len(node.children) == 0 {
-			node = nil
+	} else {
+		ch := rune(word[index])
+		if child, ok := node.children[ch]; ok {
+			child = t.delete(child, word, index+1)
+			if child == nil {
+				delete(node.children, ch)
+			}
 		}
-		return node
 	}
 
-	ch := rune(word[index])
-	if child, ok := node.children[ch]; ok {
-		node.children[ch] = t.delete(child, word, index+1)
-	}
-
+	// If a node has no children (i.e., no continuing words) and count is 0,
+	// remove the node by returning nil.
 	if len(node.children) == 0 && node.count == 0 {
-		node = nil
+		return nil
 	}
 
 	return node
