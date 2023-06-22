@@ -17,6 +17,7 @@ package main
 
 import (
 	"fmt"
+ 	"github.com/akl773/go-trie/trie"
 )
 
 func main() {
