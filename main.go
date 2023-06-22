@@ -24,4 +24,14 @@ func (t *Trie) Insert(word string) {
 	node.isWord = true
 }
 
+func (t *Trie) Search(word string) bool {
+	node := t.root
+	for _, ch := range word {
+		if _, ok := node.children[ch]; !ok {
+			return false
+		}
+		node = node.children[ch]
+	}
+	return node.isWord
+}
 func main() {}
