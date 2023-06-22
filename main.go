@@ -2,7 +2,8 @@ package main
 
 type TrieNode struct {
 	children map[rune]*TrieNode
-	isWord   bool
+	//To store frequency of string incase of duplicates
+	count int
 }
 
 type Trie struct {
@@ -21,7 +22,7 @@ func (t *Trie) Insert(word string) {
 		}
 		node = node.children[ch]
 	}
-	node.isWord = true
+	node.count++
 }
 
 func (t *Trie) Search(word string) bool {
@@ -32,6 +33,6 @@ func (t *Trie) Search(word string) bool {
 		}
 		node = node.children[ch]
 	}
-	return node.isWord
+	return node.count != 0
 }
 func main() {}
