@@ -1,4 +1,4 @@
-package main
+package trie
 
 import (
 	"errors"
@@ -7,29 +7,29 @@ import (
 
 var ErrRecordNotFound = errors.New("record not found")
 
-func FormatErrRecordNotFound(word string) error {
+func formatErrRecordNotFound(word string) error {
 	return fmt.Errorf("%s: %w", word, ErrRecordNotFound)
 }
 
-type TrieNode struct {
-	children map[rune]*TrieNode
+type Node struct {
+	children map[rune]*Node
 	//To store frequency of string in case of duplicates
 	count int
 }
 
 type Trie struct {
-	root *TrieNode
+	root *Node
 }
 
-func NewTrie() *Trie {
-	return &Trie{root: &TrieNode{children: make(map[rune]*TrieNode)}}
+func New() *Trie {
+	return &Trie{root: &Node{children: make(map[rune]*Node)}}
 }
 
 func (t *Trie) Insert(word string) {
 	node := t.root
 	for _, ch := range word {
 		if _, ok := node.children[ch]; !ok {
-			node.children[ch] = &TrieNode{children: make(map[rune]*TrieNode)}
+			node.children[ch] = &Node{children: make(map[rune]*Node)}
 		}
 		node = node.children[ch]
 	}
@@ -47,11 +47,15 @@ func (t *Trie) Search(word string) bool {
 	return node.count != 0
 }
 
-func (t *Trie) Delete(word string) {
+func (t *Trie) Delete(word string) error {
+	if !t.Search(word) {
+		return formatErrRecordNotFound(word)
+	}
 	t.delete(t.root, word, 0)
+	return nil
 }
 
-func (t *Trie) delete(node *TrieNode, word string, index int) *TrieNode {
+func (t *Trie) delete(node *Node, word string, index int) *Node {
 	if index == len(word) {
 		if node.count != 0 {
 			node.count--
@@ -72,20 +76,4 @@ func (t *Trie) delete(node *TrieNode, word string, index int) *TrieNode {
 	}
 
 	return node
-}
-
-func main() {
-	t := NewTrie()
-	t.Insert("go")
-	t.Insert("golang")
-	t.Insert("gopher")
-	t.Insert("godoc")
-	t.Insert("good")
-
-	fmt.Println(t.Search("go"))
-	fmt.Println(t.Search("gopher"))
-	fmt.Println(t.Search("godzilla"))
-
-	t.Delete("gopher")
-	fmt.Println(t.Search("gopher"))
 }
